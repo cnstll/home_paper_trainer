@@ -1,0 +1,496 @@
+# **Product Requirements Document (PRD)**
+
+**Product Name:** Scientific Paper Summarization Trainer  
+**Version:** 1.1  
+**Date:** May 26, 2026  
+**Author:** Constant Alle  
+**Status:** Ready for Development
+
+---
+
+---
+
+## **Revision History**
+
+
+| Version | Date        | Author        | Summary of Changes                                                                                     |
+| ------- | ----------- | ------------- | ------------------------------------------------------------------------------------------------------ |
+| 1.0     | May 25 2026 | Constant Alle | Initial draft                                                                                          |
+| 1.1     | May 26 2026 | Constant Alle | Architecture review: SSE replaces WebSockets; schema fixes; UX gaps addressed; feedback prompt updated |
+
+
+---
+
+---
+
+## **Problem Statement**
+
+Students, particularly in **computer science and machine learning**, often rely on second-hand summaries (blog posts, abstracts, or AI-generated summaries) to understand scientific papers. This practice hinders their ability to develop critical skills in extracting and summarizing core information from complex readings. As a result, they struggle to:
+
+- Retain key details from papers they read.
+- Summarize papers efficiently and accurately.
+- Identify and articulate the most important points in technical literature.
+
+This app aims to **train students to summarize scientific papers quickly and effectively** by providing a structured, time-pressured environment for reading and summarizing, with immediate feedback to improve their skills.
+
+---
+
+---
+
+## **Solution**
+
+A **web-based application** that allows students to:
+
+1. Submit **arXiv paper URLs** for processing.
+2. Read **individual chapters** of the paper within a **timed, distraction-free interface**.
+3. Write **concise summaries** of each chapter under time constraints.
+4. Receive **immediate, LLM-generated feedback** comparing their summary to a reference summary, including a **star-based score** and **detailed critique**.
+5. Track their **progress** across papers and chapters, with the ability to **retry** and improve summaries.
+6. Export their summaries as **TXT or Markdown** for personal use.
+
+The app will be **self-hostable** via Docker and designed for local use, with a focus on simplicity, responsiveness, and minimal distractions.
+
+---
+
+---
+
+## **User Stories**
+
+---
+
+### **Paper Submission & Management**
+
+1. As a student, I want to submit an arXiv URL so I can start summarizing a paper.
+2. As a student, I want to see my papers displayed in a **grid view** so I can easily find and select the one I want to work on.
+3. As a student, I want papers to be **automatically processed** (fetched and split into chapters) so I don’t have to manually prepare them.
+4. As a student, I want to receive a **notification** when my paper is ready to summarize so I know when to start.
+5. As a student, I want to sort my papers by **publication date, title, or completion percentage** so I can prioritize my work.
+6. As a student, I want to see the **completion percentage** on each paper’s folder icon so I can track my progress at a glance. A chapter counts as complete when a summary has been submitted for it.
+
+---
+
+### **Reading Phase**
+
+7. As a student, I want to view chapters in a **carousel** so I can navigate between them easily.
+8. As a student, I want to **start the reading phase** for a specific chapter so I can begin the exercise.
+9. As a student, I want a **3-second countdown** before the reading phase starts so I can prepare mentally.
+10. As a student, I want to read a chapter with a **timer** (1 minute per 100 words, adjusted by difficulty) so I can practice time-pressured reading.
+11. As a student, I want to **adjust the difficulty level** (0.5x, 1x, 2x base time) so I can control the challenge.
+12. As a student, I want a **visible warning at 30 seconds remaining** so I can prepare to transition to writing.
+13. As a student, I want to **pause the reading timer** so I can take a break if needed.
+14. As a student, I want the reading screen to **blur** when paused so I cannot continue reading while the timer is stopped.
+15. As a student, I want to **resume the timer** so I can continue reading where I left off.
+16. As a student, I want the reading screen to be **distraction-free** (no navigation, minimal UI) so I can focus on the content.
+17. As a student, I want to customize the reading interface (font size, font type, dark mode, line spacing, margins) so it is comfortable for me.
+
+---
+
+### **Writing Phase**
+
+18. As a student, I want the app to **automatically transition** to the writing phase when the reading timer ends so I can start summarizing immediately.
+19. As a student, I want to **manually transition** to the writing phase so I can start summarizing when I am ready.
+20. As a student, I want a **full-screen, distraction-free writing interface** so I can focus on my summary.
+21. As a student, I want a **character/word counter** so I know how much I have written.
+22. As a student, I want a **word limit** (default: 10% of the chapter’s word count) so I practice writing concisely.
+23. As a student, I want a **warning** (red counter) when I exceed the word limit so I know to revise my summary.
+24. As a student, I want a **writing timer** of at least 2× the reading time, **with a minimum floor of 3 minutes**, so I always have enough time to write thoughtfully regardless of chapter length.
+
+---
+
+### **Evaluation & Feedback**
+
+25. As a student, I want to receive **streaming feedback token-by-token via Server-Sent Events (SSE)** so I can read it as it is generated.
+26. As a student, I want to see a **loading indicator** during feedback generation so I know the system is working.
+27. As a student, I want to see a **star rating (1–5)** for my summary so I can quickly gauge my performance.
+28. As a student, I want to see **3-paragraph feedback** (Understood, Misunderstood, Missed) so I can learn from my mistakes.
+29. As a student, I want to see the **reference summary** after receiving feedback so I can close the learning loop.
+
+---
+
+### **Post-Submission & Progress Tracking**
+
+30. As a student, I want to view **all my summaries for a paper in one place** so I can review my work.
+31. As a student, I want to see the **completion status** of each chapter (completed/incomplete) so I can track my progress.
+32. As a student, I want to see the **last grade (star rating) and feedback** for each chapter so I can track my improvement.
+33. As a student, I want to **relaunch the reading/writing sequence** for a chapter so I can retry and improve my summary.
+34. As a student, I want to **export my summaries** as TXT or Markdown so I can use them for notes or sharing.
+
+---
+
+### **Settings & Accessibility**
+
+35. As a student, I want to **toggle dark mode** so I can reduce eye strain.
+36. As a student, I want to **adjust font size and spacing** so the text is comfortable to read.
+37. As a student, I want my **settings to persist via localStorage** so I don’t have to reconfigure them each session.
+38. As a student, I want the app to be **responsive** so I can use it on my laptop or mobile device.
+
+---
+
+---
+
+---
+
+## **Implementation Decisions**
+
+---
+
+### **Architecture**
+
+#### **Frontend**
+
+
+| Concern              | Tool                     | Notes                                                                                                                                                               |
+| -------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Framework            | HTMX + Jinja2            | Server-rendered HTML; ideal for paper submission, listings, and navigation.                                                                                         |
+| Styling              | Tailwind CSS + DaisyUI   | Pre-built components: modals, cards, carousels.                                                                                                                     |
+| Client-side logic    | Hyperscript              | Timers, counters, DOM manipulation. Acceptable for a small solo project.                                                                                            |
+| LLM streaming        | Server-Sent Events (SSE) | Replaces WebSockets. One-directional token stream; simpler FastAPI implementation via StreamingResponse, no connection manager needed, transparent through proxies. |
+| Settings persistence | localStorage             | Replaces cookies for UI state (dark mode, font size, spacing).                                                                                                      |
+
+
+> **Note:** SSE was chosen over WebSockets because the feedback stream is strictly server-to-client. SSE requires no protocol upgrade, reconnects automatically, and is implemented in FastAPI with a single `StreamingResponse`. WebSockets would add connection lifecycle complexity for no benefit at MVP scale.
+
+#### **Template Structure**
+
+```
+templates/
+├── base.html          # Layout with HTMX, Tailwind, DaisyUI
+├── papers/
+│   ├── index.html     # Paper grid (sortable)
+│   └── show.html      # Carousel + chapters
+├── reading.html       # Reading phase (timer, blur, countdown)
+└── writing.html       # Writing phase (word counter, timer, SSE feedback)
+```
+
+#### **Backend**
+
+
+| Concern       | Choice                                               |
+| ------------- | ---------------------------------------------------- |
+| Framework     | FastAPI (Python)                                     |
+| Database      | PostgreSQL 15+ (self-hosted)                         |
+| Deployment    | Docker Compose                                       |
+| Paper parsing | Docling (native arXiv support)                       |
+| LLM           | Mistral API (model pinned to `mistral-small-latest`) |
+| Streaming     | FastAPI `StreamingResponse` (SSE)                    |
+
+
+---
+
+---
+
+### **Core Modules**
+
+#### **Paper Processing Module**
+
+- **Responsibility:** Fetch and parse arXiv papers using Docling.
+- **Inputs:** arXiv URL.
+- **Outputs:** Paper metadata, table of contents, and chapter content stored in PostgreSQL. On parse failure, show toast: *"This paper couldn’t be parsed. Try another arXiv URL."*
+- **Dependencies:** Docling, arXiv public access.
+- **Note:** Docling is a young library; parsing failures are expected for unusual LaTeX structures. No retry logic for MVP — a clear error message is sufficient.
+
+#### **Summarization Module**
+
+- **Responsibility:** Generate a reference summary for each chapter immediately after processing.
+- **Inputs:** Chapter content.
+- **Outputs:** Reference summary stored in the `chapters` table (`reference_summary` column). Stored once — not regenerated on each evaluation to avoid cost and inconsistency.
+- **Dependencies:** Mistral API (`mistral-small-latest`).
+
+#### **Feedback Module**
+
+- **Responsibility:** Compare user summary to reference summary and stream feedback.
+- **Inputs:** User summary, reference summary, original chapter content.
+- **Outputs:** Star rating (1–5) + 3-paragraph feedback (Understood, Misunderstood, Missed) + reference summary displayed post-feedback.
+- **Transport:** SSE via FastAPI `StreamingResponse`. The client opens an `EventSource` connection after summary submission.
+- **Regeneration:** Feedback is re-generated on every retry attempt to reflect the new summary.
+- **Dependencies:** Mistral API.
+
+#### **Timer Module**
+
+- **Responsibility:** Manage reading and writing timers entirely client-side.
+- **Implementation:** Hyperscript + CSS blur effects.
+- **Reading timer:** 1 min per 100 words × difficulty multiplier (0.5x, 1x, 2x). Shows a **30-second warning** before expiry.
+- **Writing timer:** `max(2 × reading_time, 3 minutes)`. The 3-minute floor prevents excessively short windows for very short chapters.
+- **Pause behavior:** Timer stops, reading content blurs. Resume restores both.
+
+#### **Export Module**
+
+- **Responsibility:** Export user summaries as TXT or Markdown.
+- **Endpoint:** `GET /summaries/export?paper_id={id}&format=md|txt`
+- **Format (Markdown example):**
+  ```markdown
+  # {Paper Title}
+  Exported: {date}
+
+  ## Chapter 1: {Chapter Title}
+  **Score:** ★★★☆☆ (3/5)
+  **Submitted:** {date}  |  **Attempt:** 2
+
+  ### Summary
+  {summary text}
+
+  ### Feedback
+  {feedback text}
+
+  ---
+  ```
+
+---
+
+---
+
+### **Database Schema**
+
+> **Note:** Two fixes applied from v1.0:
+>
+> 1. `'order'` renamed to `'chapter_order'` to avoid SQL reserved-word conflicts.
+> 2. `reference_summary` column added to `chapters` — the v1.0 schema had no storage for LLM-generated reference summaries, forcing expensive re-generation on every evaluation.
+
+```sql
+-- Papers
+CREATE TABLE papers (
+  id          SERIAL PRIMARY KEY,
+  arxiv_id    TEXT UNIQUE NOT NULL,
+  title       TEXT NOT NULL,
+  authors     TEXT[],
+  url         TEXT NOT NULL,
+  status      TEXT DEFAULT 'pending',  -- 'pending', 'processed', 'error'
+  created_at  TIMESTAMP DEFAULT NOW()
+);
+
+-- Chapters
+CREATE TABLE chapters (
+  id                 SERIAL PRIMARY KEY,
+  paper_id           INTEGER REFERENCES papers(id),
+  title              TEXT NOT NULL,
+  content            TEXT NOT NULL,
+  word_count         INTEGER NOT NULL,
+  chapter_order      INTEGER NOT NULL,  -- renamed from 'order' (reserved keyword)
+  reference_summary  TEXT               -- LLM-generated; stored after processing
+);
+
+-- User Summaries
+CREATE TABLE user_summaries (
+  id             SERIAL PRIMARY KEY,
+  chapter_id     INTEGER REFERENCES chapters(id),
+  summary_text   TEXT NOT NULL,
+  word_count     INTEGER NOT NULL,
+  attempt_number INTEGER NOT NULL DEFAULT 1,  -- increments on retry
+  score          INTEGER,   -- 1-5 stars
+  feedback_text  TEXT,      -- 3-paragraph LLM feedback
+  created_at     TIMESTAMP DEFAULT NOW()
+);
+-- Query latest attempt: ORDER BY attempt_number DESC LIMIT 1
+```
+
+---
+
+---
+
+### **API Endpoints**
+
+
+| Endpoint                                  | Method | Description                                                                            |
+| ----------------------------------------- | ------ | -------------------------------------------------------------------------------------- |
+| `/papers`                                 | POST   | Submit an arXiv URL for processing.                                                    |
+| `/papers`                                 | GET    | List all papers (grid view, sortable).                                                 |
+| `/papers/{id}/chapters`                   | GET    | List all chapters for a paper (carousel view).                                         |
+| `/papers/{id}/chapter/{chapter_id}/read`  | GET    | Load the reading phase.                                                                |
+| `/papers/{id}/chapter/{chapter_id}/write` | GET    | Load the writing phase.                                                                |
+| `/summaries`                              | POST   | Submit a user summary. Triggers SSE feedback stream.                                   |
+| `/summaries/export`                       | GET    | Export summaries as TXT or Markdown.                                                   |
+| `/feedback/{summary_id}`                  | GET    | **SSE endpoint** — streams LLM feedback tokens. Replaces WebSocket endpoint from v1.0. |
+
+
+> **Note:** The WebSocket endpoint `/ws/feedback/{summary_id}` has been replaced by a plain GET SSE endpoint `/feedback/{summary_id}`. On the client, this is consumed via `new EventSource('/feedback/' + summaryId)`. No library or connection manager is required.
+
+---
+
+---
+
+### **LLM Prompts**
+
+#### **Summarization Prompt**
+
+```
+Summarise the following chapter from a scientific paper concisely and accurately.
+Focus on the core contributions, methods, and results.
+Output only the summary — no preamble, no commentary.
+
+Chapter:
+{chapter_content}
+```
+
+#### **Feedback Prompt**
+
+```
+You are a strict but fair grader. Compare the User Summary to the Reference Summary
+and Original Chapter.
+
+Output exactly 3 paragraphs (include a paragraph even if empty, marked N/A):
+1. Understood: Key points the user correctly captured.
+2. Misunderstood: Inaccuracies or misinterpretations.
+3. Missed: Important points the user omitted.
+
+Be concise, specific, and objective.
+Do not add commentary, apologies, or explanations beyond the 3 paragraphs.
+End your response with a single line: SCORE: N/5 (integer 1-5).
+
+User Summary: {user_summary}
+Reference Summary: {reference_summary}
+Original Chapter: {chapter_content}
+```
+
+> **Note:** The feedback prompt now ends with `SCORE: N/5` on its own line so the score can be reliably parsed server-side without a separate API call.
+
+---
+
+---
+
+### **Technical Clarifications**
+
+- **No Authentication for MVP:** All data is tied to the local instance (no user accounts).
+- **Settings persistence:** `localStorage` (replaces cookies) for UI preferences (dark mode, font size, spacing).
+- **LLM model:** Mistral API, model pinned to `mistral-small-latest` (`mistral-tiny` is deprecated).
+- **No caching for MVP:** Reference summaries are generated once per chapter at processing time and stored. Feedback is re-generated on each submission.
+- **Error handling:**
+  - Docling parse failure: Toast — *"This paper couldn’t be parsed. Try another arXiv URL."*
+  - Mistral API failure: Toast — *"Feedback generation failed. Please try again."*
+- **Responsive design:** Tailwind responsive classes (`sm:`, `md:`) for mobile support.
+
+---
+
+---
+
+---
+
+## **Testing Decisions**
+
+---
+
+### **Testing Strategy**
+
+- **Unit Testing:**
+  - Test Docling’s ability to parse arXiv papers (e.g., `2304.00001`).
+  - Test Mistral API integration for summarization and feedback.
+  - Test SCORE parsing from the feedback response.
+- **Integration Testing:**
+  - Full flow: Submit URL → process paper → read chapter → write summary → receive SSE feedback.
+  - Verify `reference_summary` is persisted after processing and is not regenerated on evaluation.
+- **User Testing:**
+  - Recruit 3–5 CS/ML students.
+  - Observe:
+    - Are timers intuitive?
+    - Is the 30s warning helpful?
+    - Is the writing time floor (3 min) appropriate?
+    - Is the feedback useful?
+
+---
+
+### **Test Cases**
+
+
+| Scenario                                             | Expected Result                                                                                          |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Submit valid arXiv URL                               | Paper processed; reference summaries generated and stored; added to grid.                                |
+| Submit invalid URL                                   | Toast: *"Invalid arXiv URL. Please try again."*                                                          |
+| Docling parse failure                                | Toast: *"This paper couldn’t be parsed. Try another arXiv URL."*                                         |
+| Reading timer reaches 30s remaining                  | Visible warning indicator appears; reading content remains visible.                                      |
+| User pauses reading timer                            | Screen blurs, timer stops. Resume unblurs screen and resumes timer.                                      |
+| User exceeds word limit                              | Counter turns red; submission is still allowed.                                                          |
+| Writing timer on a 50-word chapter (0.5x difficulty) | Reading time = 0.5 × 30s = 15s. Writing time = max(2 × 15s, 180s) = 180s (floor applied).                |
+| User submits summary                                 | SSE streams feedback tokens; star rating and 3-paragraph feedback appear; reference summary shown below. |
+| User retries a chapter                               | New `user_summaries` row created with incremented `attempt_number`. Previous attempt remains in DB.      |
+| Export summaries                                     | Downloadable file with chapter titles, scores, attempt numbers, summaries, and feedback.                 |
+
+
+---
+
+---
+
+---
+
+## **Out of Scope (MVP)**
+
+- Skill development features: progressive difficulty, guided tutorials.
+- Retention measurement: no quizzes or spaced repetition.
+- Vim keybindings.
+- Adjustable writing timer (fixed at `max(2× reading, 3 min)`).
+- Cloud hosting (self-hosted only).
+- Authentication and cross-device sync.
+- Retry logic for failed API calls (e.g., Mistral rate limits).
+- Multi-source support (arXiv only; no PDF uploads, DOIs, or other repositories).
+
+---
+
+---
+
+---
+
+## **Further Notes**
+
+---
+
+### **Assumptions**
+
+- Users are technically proficient (comfortable running Docker).
+- Users have access to arXiv papers (no paywalls).
+- Mistral API is reliable and cost-effective for MVP usage.
+
+---
+
+### **Dependencies**
+
+
+| Dependency   | Purpose                    | Version/Notes                   |
+| ------------ | -------------------------- | ------------------------------- |
+| FastAPI      | Backend framework          | Latest stable                   |
+| PostgreSQL   | Database                   | 15+                             |
+| Docling      | Paper parsing              | Native arXiv support            |
+| Mistral API  | Summarization and feedback | `mistral-small-latest` (pinned) |
+| HTMX         | Frontend interactivity     | 1.9+                            |
+| Hyperscript  | Client-side logic (timers) | 0.9+                            |
+| Tailwind CSS | Styling                    | 3.x                             |
+| DaisyUI      | UI components              | Latest                          |
+| Docker       | Deployment                 | Compose for local setup         |
+
+
+---
+
+### **Success Metrics (Post-MVP)**
+
+- **Engagement:** Number of papers/chapters summarized per user.
+- **Improvement:** Average star rating trend over time.
+- **User satisfaction:** Feedback from student testers.
+
+---
+
+### **Future Considerations**
+
+- Cloud hosting via Render or Fly.io.
+- Authentication and cross-device sync.
+- Multi-source support: PDF uploads, DOIs, other repositories.
+- Collaboration: Share summaries with peers.
+- Advanced analytics: Score improvement over time.
+
+---
+
+---
+
+---
+
+## **Glossary**
+
+
+| Term                  | Definition                                                                                               |
+| --------------------- | -------------------------------------------------------------------------------------------------------- |
+| **arXiv**             | Open-access repository of scientific papers (primarily CS/ML for this app).                              |
+| **Docling**           | Library for parsing and structuring scientific documents.                                                |
+| **LLM**               | Large Language Model (Mistral API for summarization/feedback).                                           |
+| **HTMX**              | Library for dynamic HTML updates without writing JavaScript.                                             |
+| **Hyperscript**       | Lightweight scripting language for client-side logic.                                                    |
+| **DaisyUI**           | Tailwind CSS component library.                                                                          |
+| **SSE**               | Server-Sent Events — HTTP-based one-way server-to-client stream. Used for feedback token streaming.      |
+| **WebSocket**         | Bidirectional protocol. Considered and rejected for MVP; SSE is sufficient.                              |
+| **reference_summary** | LLM-generated summary stored per chapter at processing time; used as the grading baseline.               |
+| **attempt_number**    | Monotonically increasing counter on `user_summaries` tracking how many times a chapter has been retried. |
