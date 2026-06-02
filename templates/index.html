@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Home Paper Trainer{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="hero bg-gradient-to-r from-primary to-secondary text-primary-content rounded-lg p-8 mb-8">
+        <div class="hero-content text-center">
+            <div class="max-w-md">
+                <h1 class="text-5xl font-bold">Welcome!</h1>
+                <p class="py-6">Home Paper Trainer helps you organize your research papers and manage your learning projects.</p>
+                <div class="flex gap-4 justify-center">
+                    <a href="/projects" class="btn btn-primary">View Projects</a>
+                    <a href="/papers" class="btn btn-secondary">Browse Papers</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Quick Stats -->
+        <div class="card bg-base-200 shadow-md">
+            <div class="card-body">
+                <h2 class="card-title">Quick Stats</h2>
+                <div class="stats stats-vertical lg:stats-horizontal shadow">
+                    <div class="stat">
+                        <div class="stat-title">Projects</div>
+                        <div class="stat-value">0</div>
+                        <div class="stat-desc">Total projects</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-title">Papers</div>
+                        <div class="stat-value">0</div>
+                        <div class="stat-desc">Total papers</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-title">Notes</div>
+                        <div class="stat-value">0</div>
+                        <div class="stat-desc">Total notes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Activity -->
+        <div class="card bg-base-200 shadow-md md:col-span-2">
+            <div class="card-body">
+                <h2 class="card-title">Recent Activity</h2>
+                <div class="overflow-x-auto">
+                    <table class="table w-full">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Action</th>
+                                <th>Item</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Just now</td>
+                                <td>Setup</td>
+                                <td>Project Foundation</td>
+                                <td><span class="badge badge-success">Complete</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

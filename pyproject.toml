@@ -1,14 +1,56 @@
 [project]
-name = "homer-paper-trainer"
+name = "home-paper-trainer"
 version = "0.1.0"
-description = "Add your description here"
+description = "Home Paper Trainer - A project management and learning platform"
 readme = "README.md"
-requires-python = ">=3.14"
-dependencies = []
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+    { name = "cnstll", email = "contact@cnstll.dev" }
+]
+
+dependencies = [
+    "fastapi>=0.109.0",
+    "uvicorn[standard]>=0.27.0",
+    "sqlalchemy>=2.0.25",
+    "asyncpg>=0.29.0",
+    "python-dotenv>=1.0.0",
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    "jinja2>=3.1.3",
+    "python-multipart>=0.0.6",
+]
 
 [dependency-groups]
 dev = [
     "chainlit>=2.11.1",
     "mcp>=1.27.1",
     "mistralai>=2.4.7",
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.23.0",
+    "httpx>=0.26.0",
+    "black>=24.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.8.0",
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
