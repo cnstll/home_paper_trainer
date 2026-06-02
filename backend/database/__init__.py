@@ -20,11 +20,9 @@ async def get_db():
 
 
 async def init_db():
-    """Initialize database - create tables if they don't exist."""
-    async with engine.begin() as conn:
-        # Import all models here to ensure they're registered with Base
-        from backend.database.models import User, Project, Paper, Note  # noqa: F401
-        await conn.run_sync(declarative_base().metadata.create_all)
+    """Initialize database connection."""
+    # Connection is established lazily on first use
+    pass
 
 
 Base = declarative_base()

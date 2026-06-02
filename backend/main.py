@@ -7,7 +7,6 @@ from fastapi.templating import Jinja2Templates
 
 from backend.config import settings
 from backend.database import init_db
-from backend.routes import health
 
 
 app = FastAPI(
@@ -31,9 +30,6 @@ app.add_middleware(
 # Setup templates
 templates = Jinja2Templates(directory="templates")
 
-# Include routers
-app.include_router(health.router, prefix="/api", tags=["health"])
-
 # Mount static files
 app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 
@@ -54,9 +50,3 @@ async def root(request: Request):
 async def health_check():
     """Basic health check endpoint."""
     return {"status": "healthy", "version": "0.1.0"}
-
-
-@app.get("/api/health")
-async def api_health_check():
-    """API health check endpoint."""
-    return {"status": "healthy", "version": "0.1.0", "service": "api"}
