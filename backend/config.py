@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     debug: bool = True
     
     # Database
-    database_url: str = "postgres://paper_trainer:paper_trainer@localhost:5432/paper_trainer"
+    database_url: str = "postgresql+asyncpg://paper_trainer:paper_trainer@localhost:5432/paper_trainer"
     
     # API
     api_v1_prefix: str = "/api/v1"
@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
-        case_sensitive = True
+        extra = "ignore"
 
 
 settings = Settings()

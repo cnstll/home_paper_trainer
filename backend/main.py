@@ -1,9 +1,8 @@
 """Main FastAPI application for Home Paper Trainer."""
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 
 from backend.config import settings
 from backend.database import init_db
@@ -27,9 +26,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Setup templates
-templates = Jinja2Templates(directory="templates")
-
 # Mount static files
 app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 
@@ -41,9 +37,9 @@ async def startup_event():
 
 
 @app.get("/")
-async def root(request: Request):
-    """Root endpoint - serve the main page."""
-    return templates.TemplateResponse("index.html", {"request": request})
+async def root():
+    """Root endpoint."""
+    return {"message": "Home Paper Trainer - Welcome!"}
 
 
 @app.get("/health")

@@ -5,16 +5,26 @@ from sqlalchemy.orm import declarative_base
 
 from backend.config import settings
 
-# Create async engine
-engine = create_async_engine(
-    settings.database_url,
-    echo=settings.debug,
-    future=True,
-)
+# Create async engine lazily
+engine = None
+
+
+def get_engine():
+    """Get or create the async engine."""
+    global engine
+    if engine is None:
+        engine = create_async_engine(
+            settings.database_url,
+            echo=settings.debug,
+            future=True,
+        )
+    return engine
+
 
 # Async session factory
 async def get_db():
     """Get an async database session."""
+    engine = get_engine()
     async with AsyncSession(engine, expire_on_commit=False) as session:
         yield session
 

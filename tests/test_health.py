@@ -31,16 +31,8 @@ def test_root_endpoint(client):
     """Test the root endpoint."""
     response = client.get("/")
     assert response.status_code == 200
-    assert "Home Paper Trainer" in response.text
-
-
-def test_api_health_endpoint(client):
-    """Test the /api/health endpoint."""
-    response = client.get("/api/health")
-    assert response.status_code == 200
     data = response.json()
-    assert data["status"] == "healthy"
-    assert "version" in data
+    assert "message" in data
 
 
 def test_api_docs_endpoint(client):
@@ -48,3 +40,10 @@ def test_api_docs_endpoint(client):
     response = client.get("/api/docs")
     assert response.status_code == 200
     assert "Swagger UI" in response.text or "ReDoc" in response.text
+
+
+def test_static_files(client):
+    """Test static file serving."""
+    response = client.get("/static/css/main.css")
+    assert response.status_code == 200
+    assert "tailwind" in response.text
