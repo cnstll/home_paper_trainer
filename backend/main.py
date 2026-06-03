@@ -1,12 +1,10 @@
 """Main FastAPI application for Home Paper Trainer."""
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from backend.config import settings
-from backend.database import lifespan, get_db
-
+from backend.database import lifespan
 
 # Create FastAPI app with lifespan
 app = FastAPI(
@@ -23,7 +21,12 @@ app = FastAPI(
 # In production, set CORS_ORIGINS environment variable
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost", "http://localhost:8000", "http://127.0.0.1", "http://127.0.0.1:8000"],
+    allow_origins=[
+        "http://localhost",
+        "http://localhost:8000",
+        "http://127.0.0.1",
+        "http://127.0.0.1:8000",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

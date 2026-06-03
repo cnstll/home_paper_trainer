@@ -9,7 +9,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     """Application settings.
-    
+
     In production, provide these via environment variables:
     - APP_NAME
     - DEBUG (false in production)
@@ -29,7 +29,9 @@ class Settings(BaseSettings):
     debug: bool = True
 
     # Database - OVERRIDE IN PRODUCTION
-    database_url: str = "postgresql+asyncpg://paper_trainer:paper_trainer@localhost:5432/paper_trainer"
+    database_url: str = (
+        "postgresql+asyncpg://paper_trainer:paper_trainer@localhost:5432/paper_trainer"
+    )
 
     # API
     api_v1_prefix: str = "/api/v1"
