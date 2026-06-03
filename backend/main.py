@@ -1,13 +1,14 @@
 """Main FastAPI application for Home Paper Trainer."""
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from backend.config import settings
-from backend.database import init_db
+from backend.database import lifespan, get_db
 
 
+# Create FastAPI app with lifespan
 app = FastAPI(
     title="Home Paper Trainer API",
     description="A project management and learning platform",
@@ -15,12 +16,14 @@ app = FastAPI(
     docs_url="/api/docs",
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.json",
+    lifespan=lifespan,
 )
 
-# Configure CORS
+# Configure CORS - restricted to local development by default
+# In production, set CORS_ORIGINS environment variable
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost", "http://localhost:8000", "http://127.0.0.1", "http://127.0.0.1:8000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -28,12 +31,6 @@ app.add_middleware(
 
 # Mount static files
 app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
-
-
-@app.on_event("startup")
-async def startup_event():
-    """Initialize database connection on startup."""
-    await init_db()
 
 
 @app.get("/")
