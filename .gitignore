@@ -32,6 +32,8 @@ env/
 *.swp
 *.swo
 *~
+.project
+.settings/
 
 # Testing
 .tox/
@@ -46,7 +48,7 @@ htmlcov/
 .dmypy.json
 dmypy.json
 
-# Environment
+# Environment files
 .env
 .env.local
 .env.*.local
@@ -76,3 +78,34 @@ package-lock.json
 
 # UV
 uv.lock
+
+# Local overrides
+*.local
+
+# Backup files
+*.bak
+*.backup
+
+# IDE backup
+*~
+.*.swp
+
+# Python cache
+__pycache__/
+.Python
+
+# Test coverage
+.coverage
+.pytest_cache/
+
+# Build artifacts
+build/
+dist/
+*.egg
+*.whl
+
+# Security - never commit these
+*.pem
+*.key
+*.crt
+*.p12

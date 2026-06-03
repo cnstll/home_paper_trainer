@@ -1,0 +1,62 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+.env
+.venv
+venv
+ENV
+
+# IDE
+.idea
+.vscode
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+.vibe
+.scratch
+
+# Docker
+Dockerfile
+docker-compose.yml
+.docker
+
+# Documentation
+docs/
+*.md
+
+# Tests
+tests/
+.pytest_cache/
+
+# Logs
+*.log
+logs/
+
+# Local overrides
+*.local
+
+# Build artifacts
+build/
+dist/
+*.egg
+
+# Static files (rebuilt on each deploy)
+frontend/static/
+
+# Templates (may be modified locally)
+templates/
+
+# Node
+node_modules/
+package-lock.json
