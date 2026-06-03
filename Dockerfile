@@ -7,17 +7,10 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python build dependencies
-RUN pip install --no-cache-dir hatchling
+# Install Python runtime dependencies
+RUN pip install --no-cache-dir fastapi uvicorn sqlalchemy asyncpg python-dotenv pydantic pydantic-settings jinja2 python-multipart pytest httpx
 
-# Copy project files for installation
-COPY pyproject.toml ./
-COPY uv.lock ./
-
-# Install project in editable mode with all dependencies
-RUN pip install --no-cache-dir -e ".[dev]"
-
-# Copy the rest of the application
+# Copy all application files (code, static, templates)
 COPY . .
 
 # Set environment variables

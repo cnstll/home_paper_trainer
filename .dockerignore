@@ -4,9 +4,9 @@
 
 # Python
 __pycache__
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
+*.so
 .Python
 .env
 .venv
@@ -17,26 +17,25 @@ ENV
 .idea
 .vscode
 *.swp
+*.swo
 
 # OS
 .DS_Store
 Thumbs.db
 
 # Project specific
-.vibe
-.scratch
+.vibe/
+.scratch/
 
 # Docker
 Dockerfile
 docker-compose.yml
-.docker
 
 # Documentation
 docs/
 *.md
 
 # Tests
-tests/
 .pytest_cache/
 
 # Logs
@@ -51,12 +50,17 @@ build/
 dist/
 *.egg
 
-# Static files (rebuilt on each deploy)
-frontend/static/
+# Virtual environment
+.venv/
 
-# Templates (may be modified locally)
-templates/
+# Python cache
+__pycache__/
 
-# Node
-node_modules/
-package-lock.json
+# Test coverage
+.coverage
+
+# Security - never commit these
+*.pem
+*.key
+*.crt
+*.p12
