@@ -33,6 +33,14 @@ class Settings(BaseSettings):
     # API
     api_v1_prefix: str = "/api/v1"
 
+    # CORS - comma-separated list of allowed origins
+    cors_origins: str = (
+        "http://localhost,http://localhost:8000,http://127.0.0.1,http://127.0.0.1:8000"
+    )
+
+    # Static files directory
+    static_dir: str = "frontend/static"
+
     # Security - REQUIRED: Must be provided via environment variable
     secret_key: str
     algorithm: str = "HS256"
