@@ -30,6 +30,11 @@ services:
       - "8000:8000"
     env_file:
       - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://paper_trainer:paper_trainer@db:5432/paper_trainer
+      PYTHONPATH: /app
+      # CORS settings for production
+      CORS_ORIGINS: "http://localhost,http://localhost:8000,http://127.0.0.1,http://127.0.0.1:8000"
     depends_on:
       db:
         condition: service_healthy
