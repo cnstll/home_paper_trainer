@@ -7,12 +7,10 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies from pyproject.toml
-COPY pyproject.toml ./
-RUN pip install --no-cache-dir -e .
-
 # Copy all application files (code, static, templates)
 COPY . .
+RUN pip install --no-cache-dir -e .
+
 
 # Set environment variables
 ENV PYTHONPATH=/app
