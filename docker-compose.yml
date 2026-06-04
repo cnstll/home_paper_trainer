@@ -1,0 +1,47 @@
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: paper_trainer_db
+    environment:
+      POSTGRES_USER: paper_trainer
+      POSTGRES_PASSWORD: paper_trainer
+      POSTGRES_DB: paper_trainer
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U paper_trainer"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - paper_trainer_network
+
+  # FastAPI Backend
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: paper_trainer_backend
+    command: uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://paper_trainer:paper_trainer@db:5432/paper_trainer
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - paper_trainer_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  paper_trainer_network:
+    driver: bridge

@@ -1,10 +1,111 @@
-# Python-generated files
+# Python
 __pycache__/
-*.py[oc]
+*.py[cod]
+*$py.class
+*.so
+.Python
 build/
+develop-eggs/
 dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
 wheels/
-*.egg-info
+*.egg-info/
+.installed.cfg
+*.egg
 
 # Virtual environments
-.venv
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.settings/
+
+# Testing
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+.vibe/
+.scratch/
+
+# Logs
+*.log
+logs/
+
+# Local database
+*.sqlite
+*.db
+
+# Docker
+.docker/
+
+# Node (if using npm for frontend)
+node_modules/
+package-lock.json
+
+# UV
+uv.lock
+
+# Local overrides
+*.local
+
+# Backup files
+*.bak
+*.backup
+
+# IDE backup
+*~
+.*.swp
+
+# Python cache
+__pycache__/
+.Python
+
+# Test coverage
+.coverage
+.pytest_cache/
+
+# Build artifacts
+build/
+dist/
+*.egg
+*.whl
+
+# Security - never commit these
+*.pem
+*.key
+*.crt
+*.p12

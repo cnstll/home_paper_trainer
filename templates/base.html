@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Home Paper Trainer{% endblock %}</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- DaisyUI CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.x.x/dist/full.css" rel="stylesheet" type="text/css" />
+    
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="min-h-screen bg-base-100">
+    <div class="drawer">
+        <input id="main-drawer" type="checkbox" class="drawer-toggle" />
+        
+        <div class="drawer-content">
+            <!-- Navbar -->
+            <div class="navbar bg-base-200 shadow-sm">
+                <div class="flex-1">
+                    <label for="main-drawer" class="btn btn-ghost drawer-button lg:hidden">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </label>
+                    <a href="/" class="btn btn-ghost normal-case text-xl">
+                        <span class="font-bold">Home Paper Trainer</span>
+                    </a>
+                </div>
+                <div class="flex-none">
+                    {% block navbar_actions %}{% endblock %}
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <main class="p-4 lg:p-6">
+                {% block content %}{% endblock %}
+            </main>
+            
+            <!-- Footer -->
+            <footer class="footer footer-center p-4 bg-base-200 text-base-content">
+                <div>
+                    <p>Home Paper Trainer &copy; 2026</p>
+                </div>
+            </footer>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="drawer-side">
+            <label for="main-drawer" class="drawer-overlay"></label>
+            <div class="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
+                <div class="text-xl font-bold mb-6">Menu</div>
+                <ul>
+                    <li><a href="/">Dashboard</a></li>
+                    <li><a href="/projects">Projects</a></li>
+                    <li><a href="/papers">Papers</a></li>
+                    <li><a href="/notes">Notes</a></li>
+                    <li><a href="/settings">Settings</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
