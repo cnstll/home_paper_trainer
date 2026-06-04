@@ -27,14 +27,6 @@ Thumbs.db
 .vibe/
 .scratch/
 
-# Docker
-Dockerfile
-docker-compose.yml
-
-# Documentation
-docs/
-*.md
-
 # Tests
 .pytest_cache/
 
@@ -49,12 +41,6 @@ logs/
 build/
 dist/
 *.egg
-
-# Virtual environment
-.venv/
-
-# Python cache
-__pycache__/
 
 # Test coverage
 .coverage
