@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Papers - Home Paper Trainer{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold">Papers</h1>
+        <a href="/" class="btn btn-ghost">Back to Dashboard</a>
+    </div>
+
+    <!-- Paper Submission Form -->
+    <div class="card bg-base-200 shadow-md mb-8">
+        <div class="card-body">
+            <h2 class="card-title">Submit arXiv Paper</h2>
+            <form 
+                hx-post="/papers" 
+                hx-target="#papers-list" 
+                hx-swap="outerHTML" 
+                class="space-y-4"
+            >
+                <div class="form-control">
+                    <label class="label" for="url">
+                        <span class="label-text">arXiv URL</span>
+                    </label>
+                    <input 
+                        type="url" 
+                        id="url" 
+                        name="url" 
+                        placeholder="https://arxiv.org/abs/2304.00001"
+                        class="input input-bordered w-full"
+                        required
+                    />
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    Submit
+                </button>
+            </form>
+            
+            {% if error %}
+            <div class="alert alert-error mt-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>{{ error }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Papers List -->
+    <div id="papers-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% if papers %}
+            {% for paper in papers %}
+            <div class="card bg-base-200 shadow-md hover:shadow-lg transition-shadow">
+                <div class="card-body">
+                    <h3 class="card-title truncate">{{ paper.title }}</h3>
+                    <p class="text-sm text-base-content/70 mb-2">
+                        arXiv: <code>{{ paper.arxiv_id }}</code>
+                    </p>
+                    <div class="flex justify-between items-center">
+                        <span class="badge badge-{{ paper.status }}">
+                            {{ paper.status }}
+                        </span>
+                        <a 
+                            href="/papers/{{ paper.id }}" 
+                            class="btn btn-sm btn-ghost"
+                        >
+                            View
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-span-full text-center py-12">
+                <p class="text-lg text-base-content/70">No papers submitted yet.</p>
+                <p class="text-sm text-base-content/50 mt-2">
+                    Submit an arXiv URL above to get started.
+                </p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- HTMX for form submission -->
+<script>
+    // Handle form submission with HTMX
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add toast notification for success
+        document.body.addEventListener('htmx:afterSwap', function(evt) {
+            if (evt.detail.target.id === 'papers-list' && !evt.detail.xhr.status) {
+                // Show success toast
+                const toast = document.createElement('div');
+                toast.className = 'toast toast-top toast-end toast-success';
+                toast.innerHTML = `
+                    <div class="alert alert-success">
+                        <span>Paper submitted successfully!</span>
+                    </div>
+                `;
+                document.body.appendChild(toast);
+                
+                // Remove toast after 3 seconds
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            }
+        });
+    });
+</script>
+{% endblock %}
