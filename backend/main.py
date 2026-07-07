@@ -8,6 +8,7 @@ from fastapi.staticfiles import StaticFiles
 
 from backend.config import settings
 from backend.database import lifespan
+from backend.routes import health_router, papers_router
 
 # Get version from pyproject.toml
 APP_VERSION = version("home-paper-trainer")
@@ -37,14 +38,12 @@ app.add_middleware(
 static_dir = settings.static_dir if hasattr(settings, "static_dir") else "frontend/static"
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
+# Include routers
+app.include_router(health_router)
+app.include_router(papers_router)
+
 
 @app.get("/")
 async def root():
     """Root endpoint."""
     return {"message": "Home Paper Trainer - Welcome!"}
-
-
-@app.get("/health")
-async def health_check():
-    """Basic health check endpoint."""
-    return {"status": "healthy", "version": APP_VERSION}
