@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Chapters - {{ paper.title }} - Home Paper Trainer{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-bold truncate">{{ paper.title }}</h1>
+            <p class="text-sm text-base-content/70 mt-1">
+                arXiv: <code>{{ paper.arxiv_id }}</code>
+            </p>
+        </div>
+        <a href="/papers" class="btn btn-ghost">Back to Papers</a>
+    </div>
+
+    <!-- Chapter Carousel -->
+    <div class="card bg-base-200 shadow-md">
+        <div class="card-body">
+            <h2 class="card-title mb-6">Chapters</h2>
+            
+            <!-- Chapter List -->
+            <div class="space-y-4" id="chapter-list">
+                {% for chapter in chapters %}
+                <div 
+                    class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer chapter-card"
+                    data-chapter-id="{{ chapter.id }}"
+                    data-completed="{{ 'true' if chapter.user_summaries else 'false' }}"
+                    onclick="window.location.href='/papers/{{ paper.id }}/chapters/{{ chapter.id }}/read'"
+                >
+                    <div class="card-body p-4">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-lg truncate">{{ chapter.title }}</h3>
+                                <p class="text-sm text-base-content/60 mt-1">
+                                    {{ chapter.word_count }} words
+                                </p>
+                            </div>
+                            <div class="ml-4">
+                                {% if chapter.user_summaries %}
+                                <span class="badge badge-success badge-lg">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    Completed
+                                </span>
+                                {% else %}
+                                <span class="badge badge-warning badge-lg">Pending</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
