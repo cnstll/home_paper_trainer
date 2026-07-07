@@ -1,14 +1,14 @@
 """Paper routes for submitting and managing papers."""
 
-from fastapi import APIRouter, Depends, Request, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.database import get_db
-from backend.models.paper import Paper
 from backend.models.chapter import Chapter
+from backend.models.paper import Paper
 from backend.services.paper_service import PaperService
 from backend.services.validation_service import ValidationService
 
@@ -134,20 +134,18 @@ async def list_chapters(
 ):
     """List all chapters for a specific paper."""
     # Get the paper
-    result = await db.execute(
-        select(Paper).where(Paper.id == paper_id)
-    )
+    result = await db.execute(select(Paper).where(Paper.id == paper_id))
     paper = result.scalar_one_or_none()
-    
+
     if not paper:
         raise HTTPException(status_code=404, detail="Paper not found")
-    
+
     # Get all chapters for this paper, ordered by chapter_order
     result = await db.execute(
         select(Chapter).where(Chapter.paper_id == paper_id).order_by(Chapter.chapter_order)
     )
     chapters = result.scalars().all()
-    
+
     return templates.TemplateResponse(
         "papers/chapters.html",
         {
@@ -167,23 +165,21 @@ async def read_chapter(
 ):
     """Display reading interface for a specific chapter."""
     # Get the paper
-    result = await db.execute(
-        select(Paper).where(Paper.id == paper_id)
-    )
+    result = await db.execute(select(Paper).where(Paper.id == paper_id))
     paper = result.scalar_one_or_none()
-    
+
     if not paper:
         raise HTTPException(status_code=404, detail="Paper not found")
-    
+
     # Get the chapter
     result = await db.execute(
         select(Chapter).where(Chapter.id == chapter_id, Chapter.paper_id == paper_id)
     )
     chapter = result.scalar_one_or_none()
-    
+
     if not chapter:
         raise HTTPException(status_code=404, detail="Chapter not found")
-    
+
     return templates.TemplateResponse(
         "papers/read.html",
         {
