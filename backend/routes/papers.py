@@ -19,16 +19,31 @@ templates = Jinja2Templates(directory="templates")
 async def list_papers(
     request: Request,
     db: AsyncSession = Depends(get_db),
+    sort_by: str = "created_at",
+    sort_order: str = "desc",
 ):
-    """List all papers with submission form."""
+    """List all papers with submission form and sorting."""
     try:
-        papers = await PaperService.get_all_papers(db)
+        # Get papers with completion percentage
+        papers_with_completion = await PaperService.get_papers_with_completion(
+            db, sort_by=sort_by, sort_order=sort_order
+        )
     except Exception:
-        papers = []
+        papers_with_completion = []
+
+    # Extract just the papers for the template
+    papers = [pwc["paper"] for pwc in papers_with_completion]
+    completions = {pwc["paper"].id: pwc["completion"] for pwc in papers_with_completion}
 
     return templates.TemplateResponse(
         "papers/index.html",
-        {"request": request, "papers": papers},
+        {
+            "request": request,
+            "papers": papers,
+            "completions": completions,
+            "sort_by": sort_by,
+            "sort_order": sort_order,
+        },
     )
 
 
@@ -50,14 +65,17 @@ async def submit_paper(
 
     if not is_valid:
         try:
-            papers = await PaperService.get_all_papers(db)
+            papers_with_completion = await PaperService.get_papers_with_completion(db)
         except Exception:
-            papers = []
+            papers_with_completion = []
+        papers = [pwc["paper"] for pwc in papers_with_completion]
+        completions = {pwc["paper"].id: pwc["completion"] for pwc in papers_with_completion}
         return templates.TemplateResponse(
             "papers/index.html",
             {
                 "request": request,
                 "papers": papers,
+                "completions": completions,
                 "error": error_msg,
             },
         )
@@ -67,27 +85,33 @@ async def submit_paper(
         paper, error_msg = await PaperService.create_paper(db, url)
         if error_msg:
             try:
-                papers = await PaperService.get_all_papers(db)
+                papers_with_completion = await PaperService.get_papers_with_completion(db)
             except Exception:
-                papers = []
+                papers_with_completion = []
+            papers = [pwc["paper"] for pwc in papers_with_completion]
+            completions = {pwc["paper"].id: pwc["completion"] for pwc in papers_with_completion}
             return templates.TemplateResponse(
                 "papers/index.html",
                 {
                     "request": request,
                     "papers": papers,
+                    "completions": completions,
                     "error": error_msg,
                 },
             )
     except Exception as e:
         try:
-            papers = await PaperService.get_all_papers(db)
+            papers_with_completion = await PaperService.get_papers_with_completion(db)
         except Exception:
-            papers = []
+            papers_with_completion = []
+        papers = [pwc["paper"] for pwc in papers_with_completion]
+        completions = {pwc["paper"].id: pwc["completion"] for pwc in papers_with_completion}
         return templates.TemplateResponse(
             "papers/index.html",
             {
                 "request": request,
                 "papers": papers,
+                "completions": completions,
                 "error": f"Error creating paper: {str(e)}",
             },
         )

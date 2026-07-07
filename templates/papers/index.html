@@ -49,20 +49,67 @@
         </div>
     </div>
 
+    <!-- Sort Controls -->
+    <div class="flex justify-end mb-4">
+        <div class="join">
+            <span class="join-item btn btn-sm">Sort by:</span>
+            <a 
+                href="?sort_by=created_at&sort_order={{ 'asc' if sort_order == 'desc' else 'desc' }}"
+                class="join-item btn btn-sm {% if sort_by == 'created_at' %}btn-active{% endif %}"
+            >
+                Date
+            </a>
+            <a 
+                href="?sort_by=title&sort_order={{ 'asc' if sort_order == 'desc' else 'desc' }}"
+                class="join-item btn btn-sm {% if sort_by == 'title' %}btn-active{% endif %}"
+            >
+                Title
+            </a>
+            <a 
+                href="?sort_by=completion&sort_order=desc"
+                class="join-item btn btn-sm {% if sort_by == 'completion' %}btn-active{% endif %}"
+            >
+                Completion %
+            </a>
+        </div>
+    </div>
+
     <!-- Papers List -->
     <div id="papers-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% if papers %}
             {% for paper in papers %}
             <div class="card bg-base-200 shadow-md hover:shadow-lg transition-shadow">
                 <div class="card-body">
-                    <h3 class="card-title truncate">{{ paper.title }}</h3>
-                    <p class="text-sm text-base-content/70 mb-2">
-                        arXiv: <code>{{ paper.arxiv_id }}</code>
-                    </p>
-                    <div class="flex justify-between items-center">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="card-title truncate">{{ paper.title }}</h3>
                         <span class="badge badge-{{ paper.status }}">
                             {{ paper.status }}
                         </span>
+                    </div>
+                    
+                    {% if paper.authors %}
+                    <p class="text-sm text-base-content/70 mb-2">
+                        Authors: {{ paper.authors|join(', ') }}
+                    </p>
+                    {% endif %}
+                    
+                    <p class="text-sm text-base-content/70 mb-3">
+                        arXiv: <code>{{ paper.arxiv_id }}</code>
+                    </p>
+                    
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <div class="radial-progress text-primary" 
+                                 style="--size: 3rem; --thickness: 0.5rem;"
+                                 role="progressbar"
+                                 aria-valuenow="{{ completions.get(paper.id, 0) }}"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100"
+                            >
+                                <span class="text-xs font-bold">{{ "%.0f"|format(completions.get(paper.id, 0)) }}%</span>
+                            </div>
+                            <span class="text-sm">Complete</span>
+                        </div>
                         <a 
                             href="/papers/{{ paper.id }}" 
                             class="btn btn-sm btn-ghost"
@@ -84,7 +131,7 @@
     </div>
 </div>
 
-<!-- HTMX for form submission -->
+<!-- HTMX for form submission and notifications -->
 <script>
     // Handle form submission with HTMX
     document.addEventListener('DOMContentLoaded', function() {
@@ -107,6 +154,15 @@
                 }, 3000);
             }
         });
+        
+        // Check for processing completion notifications
+        // This would be implemented with Server-Sent Events or polling in a real app
+        // For now, we'll just show a toast if there are processed papers
+        const processedPapers = document.querySelectorAll('.badge-badge-processed');
+        if (processedPapers.length > 0) {
+            // In a real implementation, this would be triggered by a websocket/SSE event
+            // when a paper transitions from pending to processed
+        }
     });
 </script>
 {% endblock %}
