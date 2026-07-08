@@ -21,7 +21,7 @@ repos:
     hooks:
       - id: pytest
         name: Run pytest
-        entry: uv run pytest
+        entry: bash -c 'DATABASE_URL="sqlite+aiosqlite:///./test.db" SECRET_KEY="test-secret-key-for-testing-only" uv run pytest'
         language: system
         pass_filenames: false
         stages: [pre-commit]
