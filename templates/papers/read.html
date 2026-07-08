@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}Read - {{ chapter.title }} - Home Paper Trainer{% endblock %}
+
+{% block extra_css %}
+<style>
+    .countdown-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        flex-direction: column;
+    }
+    
+    .countdown-number {
+        font-size: 8rem;
+        font-weight: bold;
+        color: white;
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    }
+    
+    .countdown-label {
+        font-size: 1.5rem;
+        color: white;
+        margin-top: 1rem;
+        opacity: 0.8;
+    }
+    
+    .reading-content {
+        min-height: 400px;
+    }
+    
+    .start-button-container {
+        text-align: center;
+        margin: 2rem 0;
+    }
+    
+    .start-button {
+        font-size: 1.25rem;
+        padding: 1rem 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-2xl font-bold truncate">{{ chapter.title }}</h1>
+            <p class="text-sm text-base-content/70 mt-1">
+                {{ chapter.word_count }} words
+            </p>
+        </div>
+        <a href="/papers/{{ paper.id }}/chapters" class="btn btn-ghost">Back to Chapters</a>
+    </div>
+
+    <!-- Chapter Content Card -->
+    <div class="card bg-base-200 shadow-md mb-8">
+        <div class="card-body">
+            <div class="reading-content prose max-w-none" id="chapter-content">
+                {{ chapter.content | safe }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Start Reading Button -->
+    <div class="start-button-container" id="start-section">
+        <button 
+            id="start-reading-btn" 
+            class="btn btn-primary btn-lg start-button"
+            onclick="startCountdown()"
+        >
+            Start Reading
+        </button>
+    </div>
+</div>
+
+<!-- Countdown Overlay (hidden by default) -->
+<div id="countdown-overlay" class="countdown-overlay" style="display: none;">
+    <div class="countdown-number" id="countdown-number">3</div>
+    <div class="countdown-label" id="countdown-label">Getting ready...</div>
+</div>
+
+<!-- Timer display (hidden by default) -->
+<div id="timer-display" class="text-center" style="display: none; margin-top: 2rem;">
+    <div class="text-2xl font-mono">
+        Time remaining: <span id="timer-value">00:00</span>
+    </div>
+</div>
+
+<script>
+    let countdownValue = 3;
+    let countdownInterval = null;
+    let readingTimer = null;
+    let readingStartTime = null;
+    let readingDuration = 0;
+    
+    // Calculate reading duration based on word count
+    // Average reading speed: 200 words per minute
+    const readingSpeed = 200; // words per minute
+    const wordCount = {{ chapter.word_count }};
+    readingDuration = Math.ceil((wordCount / readingSpeed) * 60); // in seconds
+    
+    function startCountdown() {
+        // Hide start button
+        document.getElementById('start-section').style.display = 'none';
+        
+        // Show countdown overlay
+        const overlay = document.getElementById('countdown-overlay');
+        overlay.style.display = 'flex';
+        
+        // Disable pointer events on the rest of the page
+        document.body.style.pointerEvents = 'none';
+        overlay.style.pointerEvents = 'auto';
+        
+        countdownValue = 3;
+        document.getElementById('countdown-number').textContent = countdownValue;
+        document.getElementById('countdown-label').textContent = 'Getting ready...';
+        
+        countdownInterval = setInterval(() => {
+            countdownValue--;
+            document.getElementById('countdown-number').textContent = countdownValue;
+            
+            if (countdownValue <= 0) {
+                clearInterval(countdownInterval);
+                startReading();
+            }
+        }, 1000);
+    }
+    
+    function startReading() {
+        // Hide countdown overlay
+        document.getElementById('countdown-overlay').style.display = 'none';
+        
+        // Restore pointer events
+        document.body.style.pointerEvents = 'auto';
+        
+        // Show timer display
+        document.getElementById('timer-display').style.display = 'block';
+        
+        // Start reading timer
+        readingStartTime = Date.now();
+        updateTimerDisplay();
+        
+        readingTimer = setInterval(() => {
+            updateTimerDisplay();
+        }, 1000);
+        
+        // Scroll to content
+        document.getElementById('chapter-content').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    function updateTimerDisplay() {
+        const elapsed = Math.floor((Date.now() - readingStartTime) / 1000);
+        const remaining = Math.max(0, readingDuration - elapsed);
+        
+        const minutes = Math.floor(remaining / 60);
+        const seconds = remaining % 60;
+        
+        document.getElementById('timer-value').textContent = 
+            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        // When timer reaches 0, trigger auto-transition
+        if (remaining <= 0) {
+            clearInterval(readingTimer);
+            // In a real implementation, this would redirect to the writing phase
+            // For now, we'll just show a notification
+            alert('Reading time complete! Ready to write your summary.');
+        }
+    }
+    
+    // Prevent keyboard shortcuts from bypassing countdown
+    document.addEventListener('keydown', function(e) {
+        if (document.getElementById('countdown-overlay').style.display === 'flex') {
+            // Block all keyboard input during countdown
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+    });
+</script>
+{% endblock %}

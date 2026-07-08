@@ -36,7 +36,6 @@
                 <button type="submit" class="btn btn-primary">
                     Submit
                 </button>
-            </form>
             
             {% if error %}
             <div class="alert alert-error mt-4">
@@ -111,10 +110,10 @@
                             <span class="text-sm">Complete</span>
                         </div>
                         <a 
-                            href="/papers/{{ paper.id }}" 
+                            href="/papers/{{ paper.id }}/chapters" 
                             class="btn btn-sm btn-ghost"
                         >
-                            View
+                            View Chapters
                         </a>
                     </div>
                 </div>
