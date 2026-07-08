@@ -1,9 +1,5 @@
 """Simple unit tests for reading initiation logic without FastAPI app."""
 
-from unittest.mock import MagicMock
-
-import pytest
-
 
 class TestChapterCarouselLogic:
     """Unit tests for chapter carousel logic."""
